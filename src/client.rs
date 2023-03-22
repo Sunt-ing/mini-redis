@@ -359,7 +359,7 @@ impl Client {
                     // num-subscribed is the number of channels that the client
                     // is currently subscribed to.
                     [subscribe, schannel, ..]
-                        if *subscribe == "subscribe" && *schannel == channel => {}
+                        if *subscribe == "SUBSCRIBE" && *schannel == channel => {}
                     _ => return Err(response.to_error()),
                 },
                 frame => return Err(frame.to_error()),
@@ -410,7 +410,7 @@ impl Subscriber {
 
                 match mframe {
                     Frame::Array(ref frame) => match frame.as_slice() {
-                        [message, channel, content] if *message == "message" => Ok(Some(Message {
+                        [message, channel, content] if *message == "MESSAGE" => Ok(Some(Message {
                             channel: channel.to_string(),
                             content: Bytes::from(content.to_string()),
                         })),
@@ -481,7 +481,7 @@ impl Subscriber {
 
             match response {
                 Frame::Array(ref frame) => match frame.as_slice() {
-                    [unsubscribe, channel, ..] if *unsubscribe == "unsubscribe" => {
+                    [unsubscribe, channel, ..] if *unsubscribe == "UNSUBSCRIBE" => {
                         let len = self.subscribed_channels.len();
 
                         if len == 0 {

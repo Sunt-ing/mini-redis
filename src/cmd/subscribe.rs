@@ -161,7 +161,7 @@ impl Subscribe {
     /// to the server.
     pub(crate) fn into_frame(self) -> Frame {
         let mut frame = Frame::array();
-        frame.push_bulk(Bytes::from("subscribe".as_bytes()));
+        frame.push_bulk(Bytes::from("SUBSCRIBE".as_bytes()));
         for channel in self.channels {
             frame.push_bulk(Bytes::from(channel.into_bytes()));
         }
@@ -255,7 +255,7 @@ async fn handle_command(
 /// decide whether to clone the channel name or not.
 fn make_subscribe_frame(channel_name: String, num_subs: usize) -> Frame {
     let mut response = Frame::array();
-    response.push_bulk(Bytes::from_static(b"subscribe"));
+    response.push_bulk(Bytes::from_static(b"SUBSCRIBE"));
     response.push_bulk(Bytes::from(channel_name));
     response.push_int(num_subs as u64);
     response
@@ -264,7 +264,7 @@ fn make_subscribe_frame(channel_name: String, num_subs: usize) -> Frame {
 /// Creates the response to an unsubcribe request.
 fn make_unsubscribe_frame(channel_name: String, num_subs: usize) -> Frame {
     let mut response = Frame::array();
-    response.push_bulk(Bytes::from_static(b"unsubscribe"));
+    response.push_bulk(Bytes::from_static(b"UNSUBSCRIBE"));
     response.push_bulk(Bytes::from(channel_name));
     response.push_int(num_subs as u64);
     response
@@ -274,7 +274,7 @@ fn make_unsubscribe_frame(channel_name: String, num_subs: usize) -> Frame {
 /// the client subscribes to.
 fn make_message_frame(channel_name: String, msg: Bytes) -> Frame {
     let mut response = Frame::array();
-    response.push_bulk(Bytes::from_static(b"message"));
+    response.push_bulk(Bytes::from_static(b"MESSAGE"));
     response.push_bulk(Bytes::from(channel_name));
     response.push_bulk(msg);
     response
@@ -340,7 +340,7 @@ impl Unsubscribe {
     /// send to the server.
     pub(crate) fn into_frame(self) -> Frame {
         let mut frame = Frame::array();
-        frame.push_bulk(Bytes::from("unsubscribe".as_bytes()));
+        frame.push_bulk(Bytes::from("UNSUBSCRIBE".as_bytes()));
 
         for channel in self.channels {
             frame.push_bulk(Bytes::from(channel.into_bytes()));

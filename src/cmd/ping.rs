@@ -70,7 +70,7 @@ impl Ping {
     /// to the server.
     pub(crate) fn into_frame(self) -> Frame {
         let mut frame = Frame::array();
-        frame.push_bulk(Bytes::from("ping".as_bytes()));
+        frame.push_bulk(Bytes::from("PING".as_bytes()));
         if let Some(msg) = self.msg {
             frame.push_bulk(Bytes::from(msg));
         }

@@ -52,17 +52,17 @@ impl Command {
         // All redis commands begin with the command name as a string. The name
         // is read and converted to lower cases in order to do case sensitive
         // matching.
-        let command_name = parse.next_string()?.to_lowercase();
+        let command_name = parse.next_string()?.to_uppercase();
 
         // Match the command name, delegating the rest of the parsing to the
         // specific command.
         let command = match &command_name[..] {
-            "get" => Command::Get(Get::parse_frames(&mut parse)?),
-            "publish" => Command::Publish(Publish::parse_frames(&mut parse)?),
-            "set" => Command::Set(Set::parse_frames(&mut parse)?),
-            "subscribe" => Command::Subscribe(Subscribe::parse_frames(&mut parse)?),
-            "unsubscribe" => Command::Unsubscribe(Unsubscribe::parse_frames(&mut parse)?),
-            "ping" => Command::Ping(Ping::parse_frames(&mut parse)?),
+            "GET" => Command::Get(Get::parse_frames(&mut parse)?),
+            "PUBLISH" => Command::Publish(Publish::parse_frames(&mut parse)?),
+            "SET" => Command::Set(Set::parse_frames(&mut parse)?),
+            "SUBSCRIBE" => Command::Subscribe(Subscribe::parse_frames(&mut parse)?),
+            "UNSUBSCRIBE" => Command::Unsubscribe(Unsubscribe::parse_frames(&mut parse)?),
+            "PING" => Command::Ping(Ping::parse_frames(&mut parse)?),
             _ => {
                 // The command is not recognized and an Unknown command is
                 // returned.
@@ -111,12 +111,12 @@ impl Command {
     /// Returns the command name
     pub(crate) fn get_name(&self) -> &str {
         match self {
-            Command::Get(_) => "get",
-            Command::Publish(_) => "pub",
-            Command::Set(_) => "set",
-            Command::Subscribe(_) => "subscribe",
-            Command::Unsubscribe(_) => "unsubscribe",
-            Command::Ping(_) => "ping",
+            Command::Get(_) => "GET",
+            Command::Publish(_) => "PUB",
+            Command::Set(_) => "SET",
+            Command::Subscribe(_) => "SUBSCRIBE",
+            Command::Unsubscribe(_) => "UNSUBSCRIBE",
+            Command::Ping(_) => "PING",
             Command::Unknown(cmd) => cmd.get_name(),
         }
     }

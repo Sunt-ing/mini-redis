@@ -147,7 +147,7 @@ async fn pub_sub() {
     let mut response = [0; 34];
     sub1.read_exact(&mut response).await.unwrap();
     assert_eq!(
-        &b"*3\r\n$9\r\nsubscribe\r\n$5\r\nhello\r\n:1\r\n"[..],
+        &b"*3\r\n$9\r\nSUBSCRIBE\r\n$5\r\nhello\r\n:1\r\n"[..],
         &response[..]
     );
 
@@ -165,7 +165,7 @@ async fn pub_sub() {
     let mut response = [0; 39];
     sub1.read_exact(&mut response).await.unwrap();
     assert_eq!(
-        &b"*3\r\n$7\r\nmessage\r\n$5\r\nhello\r\n$5\r\nworld\r\n"[..],
+        &b"*3\r\n$7\r\nMESSAGE\r\n$5\r\nhello\r\n$5\r\nworld\r\n"[..],
         &response[..]
     );
 
@@ -181,13 +181,13 @@ async fn pub_sub() {
     let mut response = [0; 34];
     sub2.read_exact(&mut response).await.unwrap();
     assert_eq!(
-        &b"*3\r\n$9\r\nsubscribe\r\n$5\r\nhello\r\n:1\r\n"[..],
+        &b"*3\r\n$9\r\nSUBSCRIBE\r\n$5\r\nhello\r\n:1\r\n"[..],
         &response[..]
     );
     let mut response = [0; 32];
     sub2.read_exact(&mut response).await.unwrap();
     assert_eq!(
-        &b"*3\r\n$9\r\nsubscribe\r\n$3\r\nfoo\r\n:2\r\n"[..],
+        &b"*3\r\n$9\r\nSUBSCRIBE\r\n$3\r\nfoo\r\n:2\r\n"[..],
         &response[..]
     );
 
@@ -215,7 +215,7 @@ async fn pub_sub() {
     let mut response = [0; 39];
     sub1.read_exact(&mut response).await.unwrap();
     assert_eq!(
-        &b"*3\r\n$7\r\nmessage\r\n$5\r\nhello\r\n$5\r\njazzy\r\n"[..],
+        &b"*3\r\n$7\r\nMESSAGE\r\n$5\r\nhello\r\n$5\r\njazzy\r\n"[..],
         &response[..]
     );
 
@@ -223,7 +223,7 @@ async fn pub_sub() {
     let mut response = [0; 39];
     sub2.read_exact(&mut response).await.unwrap();
     assert_eq!(
-        &b"*3\r\n$7\r\nmessage\r\n$5\r\nhello\r\n$5\r\njazzy\r\n"[..],
+        &b"*3\r\n$7\r\nMESSAGE\r\n$5\r\nhello\r\n$5\r\njazzy\r\n"[..],
         &response[..]
     );
 
@@ -237,7 +237,7 @@ async fn pub_sub() {
     let mut response = [0; 35];
     sub2.read_exact(&mut response).await.unwrap();
     assert_eq!(
-        &b"*3\r\n$7\r\nmessage\r\n$3\r\nfoo\r\n$3\r\nbar\r\n"[..],
+        &b"*3\r\n$7\r\nMESSAGE\r\n$3\r\nfoo\r\n$3\r\nbar\r\n"[..],
         &response[..]
     );
 }
@@ -250,7 +250,7 @@ async fn manage_subscription() {
 
     // Create a subscriber
     let mut sub = TcpStream::connect(addr).await.unwrap();
-    sub.write_all(b"*2\r\n$9\r\nSUBSCRIBE\r\n$5\r\nhello\r\n")
+    sub.write_all(b"*2\r\n$9\r\nsubscribe\r\n$5\r\nhello\r\n")
         .await
         .unwrap();
 
@@ -258,31 +258,31 @@ async fn manage_subscription() {
     let mut response = [0; 34];
     sub.read_exact(&mut response).await.unwrap();
     assert_eq!(
-        &b"*3\r\n$9\r\nsubscribe\r\n$5\r\nhello\r\n:1\r\n"[..],
+        &b"*3\r\n$9\r\nSUBSCRIBE\r\n$5\r\nhello\r\n:1\r\n"[..],
         &response[..]
     );
 
     // Update subscription to add `foo`
-    sub.write_all(b"*2\r\n$9\r\nSUBSCRIBE\r\n$3\r\nfoo\r\n")
+    sub.write_all(b"*2\r\n$9\r\nsubscribe\r\n$3\r\nfoo\r\n")
         .await
         .unwrap();
 
     let mut response = [0; 32];
     sub.read_exact(&mut response).await.unwrap();
     assert_eq!(
-        &b"*3\r\n$9\r\nsubscribe\r\n$3\r\nfoo\r\n:2\r\n"[..],
+        &b"*3\r\n$9\r\nSUBSCRIBE\r\n$3\r\nfoo\r\n:2\r\n"[..],
         &response[..]
     );
 
     // Update subscription to remove `hello`
-    sub.write_all(b"*2\r\n$11\r\nUNSUBSCRIBE\r\n$5\r\nhello\r\n")
+    sub.write_all(b"*2\r\n$11\r\nunsubscribe\r\n$5\r\nhello\r\n")
         .await
         .unwrap();
 
     let mut response = [0; 37];
     sub.read_exact(&mut response).await.unwrap();
     assert_eq!(
-        &b"*3\r\n$11\r\nunsubscribe\r\n$5\r\nhello\r\n:1\r\n"[..],
+        &b"*3\r\n$11\r\nUNSUBSCRIBE\r\n$5\r\nhello\r\n:1\r\n"[..],
         &response[..]
     );
 
@@ -308,7 +308,7 @@ async fn manage_subscription() {
     let mut response = [0; 35];
     sub.read_exact(&mut response).await.unwrap();
     assert_eq!(
-        &b"*3\r\n$7\r\nmessage\r\n$3\r\nfoo\r\n$3\r\nbar\r\n"[..],
+        &b"*3\r\n$7\r\nMESSAGE\r\n$3\r\nfoo\r\n$3\r\nbar\r\n"[..],
         &response[..]
     );
 
@@ -326,7 +326,7 @@ async fn manage_subscription() {
     let mut response = [0; 35];
     sub.read_exact(&mut response).await.unwrap();
     assert_eq!(
-        &b"*3\r\n$11\r\nunsubscribe\r\n$3\r\nfoo\r\n:0\r\n"[..],
+        &b"*3\r\n$11\r\nUNSUBSCRIBE\r\n$3\r\nfoo\r\n:0\r\n"[..],
         &response[..]
     );
 }
@@ -342,7 +342,7 @@ async fn send_error_unknown_command() {
 
     // Get a key, data is missing
     stream
-        .write_all(b"*2\r\n$3\r\nFOO\r\n$5\r\nhello\r\n")
+        .write_all(b"*2\r\n$3\r\nfoo\r\n$5\r\nhello\r\n")
         .await
         .unwrap();
 
@@ -350,7 +350,7 @@ async fn send_error_unknown_command() {
 
     stream.read_exact(&mut response).await.unwrap();
 
-    assert_eq!(b"-ERR unknown command \'foo\'\r\n", &response);
+    assert_eq!(b"-ERR unknown command \'FOO\'\r\n", &response);
 }
 
 // In this case we test that server Responds with an Error message if a client
@@ -372,29 +372,29 @@ async fn send_error_get_set_after_subscribe() {
     stream.read_exact(&mut response).await.unwrap();
 
     assert_eq!(
-        &b"*3\r\n$9\r\nsubscribe\r\n$5\r\nhello\r\n:1\r\n"[..],
+        &b"*3\r\n$9\r\nSUBSCRIBE\r\n$5\r\nhello\r\n:1\r\n"[..],
         &response[..]
     );
 
     stream
-        .write_all(b"*3\r\n$3\r\nSET\r\n$5\r\nhello\r\n$5\r\nworld\r\n")
+        .write_all(b"*3\r\n$3\r\nset\r\n$5\r\nhello\r\n$5\r\nworld\r\n")
         .await
         .unwrap();
 
     let mut response = [0; 28];
 
     stream.read_exact(&mut response).await.unwrap();
-    assert_eq!(b"-ERR unknown command \'set\'\r\n", &response);
+    assert_eq!(b"-ERR unknown command \'SET\'\r\n", &response);
 
     stream
-        .write_all(b"*2\r\n$3\r\nGET\r\n$5\r\nhello\r\n")
+        .write_all(b"*2\r\n$3\r\nget\r\n$5\r\nhello\r\n")
         .await
         .unwrap();
 
     let mut response = [0; 28];
 
     stream.read_exact(&mut response).await.unwrap();
-    assert_eq!(b"-ERR unknown command \'get\'\r\n", &response);
+    assert_eq!(b"-ERR unknown command \'GET\'\r\n", &response);
 }
 
 async fn start_server() -> SocketAddr {

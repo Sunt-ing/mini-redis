@@ -92,7 +92,7 @@ impl Publish {
     /// to the server.
     pub(crate) fn into_frame(self) -> Frame {
         let mut frame = Frame::array();
-        frame.push_bulk(Bytes::from("publish".as_bytes()));
+        frame.push_bulk(Bytes::from("PUBLISH".as_bytes()));
         frame.push_bulk(Bytes::from(self.channel.into_bytes()));
         frame.push_bulk(self.message);
 
