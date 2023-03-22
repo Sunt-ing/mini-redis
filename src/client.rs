@@ -475,10 +475,30 @@ impl Subscriber {
             channels.len()
         };
 
-        // Read the response
-        for _ in 0..num {
-            let response = self.client.read_response().await?;
+        let message = self.client.read_response().await?;
 
+        // drop messages from the ubsubscribed channels
+        loop{
+            match message {
+                Frame::Array(ref frame) => match frame.as_slice() {
+                    [command, channel, ..]=> {
+                        if *command == "message" {
+                            continue;
+                        }
+                        if *command == "unsubscribe" {
+                            break;
+                        }
+                        return Err(message.to_error())
+                    }
+                    _ => return Err(message.to_error()),
+                },
+                frame => return Err(frame.to_error()),
+            }
+        }
+
+        // process the response of unsubscribe command
+        let mut response = message;
+        for _ in 1..num {
             match response {
                 Frame::Array(ref frame) => match frame.as_slice() {
                     [unsubscribe, channel, ..] if *unsubscribe == "unsubscribe" => {
@@ -502,6 +522,8 @@ impl Subscriber {
                 },
                 frame => return Err(frame.to_error()),
             };
+
+            response = self.client.read_response().await?;
         }
 
         Ok(())

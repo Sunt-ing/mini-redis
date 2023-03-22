@@ -35,5 +35,8 @@ pub async fn main() -> Result<()> {
         );
     }
 
+    // Unsubscribe to channel foo, and the rest messages in the channel would be ignored.
+    subscriber.unsubscribe(&vec!["foo".into()]).await.unwrap();
+
     Ok(())
 }
